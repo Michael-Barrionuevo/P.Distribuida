@@ -6,5 +6,5 @@ db:
     connection:
         url: jdbc:postgresql://localhost:5432/books20252026
         username: postgres
-        password: Aucas1945
+        password: ${DB_PASSWORD}
         poolName: pool1
