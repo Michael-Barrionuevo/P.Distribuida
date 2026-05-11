@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="/microprofile-config (snapshot).properties">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="/microprofile-config (snapshot).properties" />
+              <option name="originalContent" value="# configuration MP&#10;app.name= app-authors" />
+              <option name="updatedContent" value="# configuration MP&#13;&#10;app.name= app-books" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

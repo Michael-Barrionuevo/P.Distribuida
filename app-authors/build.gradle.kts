@@ -36,6 +36,9 @@ dependencies {
     //FLYWAY
     implementation("io.quarkus:quarkus-flyway:3.35.2")
     runtimeOnly("org.flywaydb:flyway-database-postgresql:12.5.0")
+
+    //MODULOS
+    implementation(project(":app-books"))
 }
 
 tasks.test {
