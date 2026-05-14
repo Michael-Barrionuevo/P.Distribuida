@@ -33,6 +33,17 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
 
+    //SERVICES DISCOVERY
+    //implementation("io.quarkus:quarkus-smallrye-stork")
+
+    //SERVICIOS REST
+    implementation("io.quarkus:quarkus-rest-client-jsonb")
+    implementation("io.quarkus:quarkus-rest-client")
+
+
+    implementation("org.modelmapper:modelmapper:3.2.6")
+
+
 }
 
 tasks.test {

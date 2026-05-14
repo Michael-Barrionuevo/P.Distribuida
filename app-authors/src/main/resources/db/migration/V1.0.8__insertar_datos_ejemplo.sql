@@ -31,7 +31,7 @@ insert into line_items (quantity, book_isbn, order_id) values
 (1, '978-0596009205', 3);
 
 -- ASIGNACIÓN AUTOR-LIBRO
-insert into book_author (books_isbn, authors_id) values
+insert into books_authors (books_isbn, authors_id) values
 ('978-0134685991', 1),
 ('978-0201633610', 2),
 ('978-0596009205', 3),

@@ -16,4 +16,7 @@ public class Book {
     private String title;
     private int version;
 
+    @OneToOne(mappedBy = "book")
+    private Inventory inventory;
+
 }

@@ -4,6 +4,7 @@ import com.programacion.distribuida.books.db.Book;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "authors")
 @Getter
 @Setter
+@ToString
 public class Author {
 
     @Id
@@ -18,7 +20,7 @@ public class Author {
     private Integer id;
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "authors_id"), inverseJoinColumns = @JoinColumn(name = "books_isbn"))
-    private List<Book> books;
+//    @ManyToMany
+//    @JoinTable(name = "book_author", joinColumns = @JoinColumn(name = "authors_id"), inverseJoinColumns = @JoinColumn(name = "books_isbn"))
+//    private List<Book> books;
 }

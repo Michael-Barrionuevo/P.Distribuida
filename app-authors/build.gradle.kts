@@ -39,6 +39,9 @@ dependencies {
 
     //MODULOS
     implementation(project(":app-books"))
+
+    //Model Mapper
+    implementation("org.modelmapper:modelmapper:3.2.6")
 }
 
 tasks.test {

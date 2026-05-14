@@ -1,6 +1,7 @@
 package com.programacion.distribuida.authors.rest;
 
 import com.programacion.distribuida.authors.db.Author;
+import com.programacion.distribuida.authors.dtos.AuthorDto;
 import com.programacion.distribuida.authors.repo.AuthorRepository;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -43,6 +44,20 @@ public class AuthorRest {
                     return it;
                 })
                 .map(Response::ok).orElse(Response.status(Response.Status.NOT_FOUND)).build();
+    }
+
+    @GET
+    @Path("/find/{isbn}")
+    public List<AuthorDto> findByBook(@PathParam("isbn") String isbn) {
+
+        return authorRepository.findByBook(isbn)
+                .stream()
+                .map(it -> AuthorDto.builder()
+                        .id(it.getId())
+                        .name(it.getName())
+                        .build())
+                .toList();
+
     }
 }
 
