@@ -52,6 +52,7 @@ public class AuthorRest {
 
         return authorRepository.findByBook(isbn)
                 .stream()
+                .peek(it -> it.setName(it.getName() + " - " + httpPort))
                 .map(it -> AuthorDto.builder()
                         .id(it.getId())
                         .name(it.getName())

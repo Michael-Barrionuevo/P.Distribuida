@@ -42,6 +42,10 @@ dependencies {
 
     //Model Mapper
     implementation("org.modelmapper:modelmapper:3.2.6")
+
+    //Service Discovery
+    implementation("io.quarkus:quarkus-smallrye-stork")
+    implementation("io.smallrye.reactive:smallrye-mutiny-vertx-consul-client")
 }
 
 tasks.test {

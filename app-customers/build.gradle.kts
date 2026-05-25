@@ -1,43 +1,32 @@
 plugins {
-    id("java")
-    id("io.quarkus") version "3.35.2"
-    id("io.freefair.lombok") version "9.2.0"
+    java
+    id("org.springframework.boot") version "4.0.6"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "uce.edu.ec"
-version = "unspecified"
+group = "com.example"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
-val quarkusVersion = "3.35.2"
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_25
-    targetCompatibility = JavaVersion.VERSION_25
-}
-
+extra["springCloudVersion"] = "2025.1.1"
 
 dependencies {
-    implementation(enforcedPlatform("io.quarkus.platform:quarkus-bom:$quarkusVersion"))
-
-    //CDI
-    implementation("io.quarkus:quarkus-arc")
-
-
-    //REST
-    implementation("io.quarkus:quarkus-rest")
-    implementation("io.quarkus:quarkus-rest-jsonb")
-    implementation("io.quarkus:quarkus-hibernate-orm")
-    implementation("io.quarkus:quarkus-hibernate-orm-panache")
-    implementation("io.quarkus:quarkus-jdbc-postgresql")
-
-    implementation("org.modelmapper:modelmapper:3.2.6")
-
-
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.cloud:spring-cloud-starter-consul-discovery")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 }
 
-tasks.test {
-    useJUnitPlatform()
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
 }
