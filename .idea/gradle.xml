@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app-authors" />
             <option value="$PROJECT_DIR$/app-books" />
             <option value="$PROJECT_DIR$/app-customers" />
+            <option value="$PROJECT_DIR$/app-web" />
             <option value="$PROJECT_DIR$/web01" />
             <option value="$PROJECT_DIR$/web02" />
           </set>

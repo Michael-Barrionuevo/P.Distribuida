@@ -1,9 +1,16 @@
 server:
   port: 8090
 spring:
-    application:
-        name: app-customers
-    cloud:
-      consul:
-        host: localhost
-        port: 8500
+  application:
+    name: app-customers
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        tags:
+          - framework=springboot-4.0.6
+          - traefik.enable=true
+          - traefik.http.routers.router-app-customers.rule=PathPrefix(`/app-customers`)
+          - traefik.http.routers.router-app-customers.middlewares=middleware-customers
+          - traefik.http.middlewares.middleware-customers.stripprefix.prefixes=/app-customers

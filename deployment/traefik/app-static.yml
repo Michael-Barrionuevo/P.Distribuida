@@ -1,0 +1,62 @@
+http:
+  routers:
+    router-app-authors:
+      entryPoints:
+        - http
+      rule: "PathPrefix(`/app-authors`)"
+      middlewares:
+        - middleware-authors
+      service: service-app-authors
+
+    router-app-books:
+      entryPoints:
+        - http
+      rule: "PathPrefix(`/app-books`)"
+      middlewares:
+        - middleware-books
+      service: service-app-books
+
+    # === 1. AGREGAMOS EL ROUTER PARA CUSTOMERS ===
+    router-app-customers:
+      entryPoints:
+        - http
+      rule: "PathPrefix(`/app-customers`)"
+      middlewares:
+        - middleware-customers
+      service: service-app-customers
+
+  services:
+    service-app-authors:
+      loadBalancer:
+        servers:
+          - url: http://127.0.0.1:8070
+          - url: http://127.0.0.1:8071
+
+    service-app-books:
+      loadBalancer:
+        servers:
+          - url: http://127.0.0.1:8080
+          - url: http://127.0.0.1:8081
+
+    # === 2. AGREGAMOS EL SERVICIO CON SUS PUERTOS (8090 y 8091) ===
+    service-app-customers:
+      loadBalancer:
+        servers:
+          - url: http://127.0.0.1:8090
+          - url: http://127.0.0.1:8091
+
+  middlewares:
+    middleware-authors:
+      stripPrefix:
+        prefixes:
+          - /app-authors
+    middleware-books:
+      stripPrefix:
+        prefixes:
+          - /app-books
+
+    # === 3. AGREGAMOS EL MIDDLEWARE PARA LIMPIAR EL PREFIJO ===
+    middleware-customers:
+      stripPrefix:
+        prefixes:
+          - /app-customers

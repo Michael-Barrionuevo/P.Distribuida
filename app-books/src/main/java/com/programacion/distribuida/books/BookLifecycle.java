@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.net.InetAddress;
+import java.util.List;
 
 
 @ApplicationScoped
@@ -22,7 +23,7 @@ public class BookLifecycle {
     String consultHost;
 
     @Inject
-    @ConfigProperty(name = "consul.posrt", defaultValue = "8500")
+    @ConfigProperty(name = "consul.port", defaultValue = "8500")
     Integer consulPort;
 
     @Inject
@@ -48,12 +49,21 @@ public class BookLifecycle {
                     .setInterval("10s")
                     .setDeregisterAfter("10s");
 
+            var tags = List.of(
+                    "traefik.enable=true",
+                    "traefik.http.routers.router-app-books.rule=PathPrefix(`/app-books`)",
+                    "traefik.http.routers.router-app-books.middlewares=middleware-books",
+                    "traefik.http.middlewares.middleware-books.stripprefix.prefixes=/app-books"
+
+            );
+
             ServiceOptions serviceOptions = new ServiceOptions()
                     .setName("app-books")
                     .setId(serviceId)
                     .setAddress(ipAddress)
                     .setPort(appPort)
-                    .setCheckOptions(checkOptions);
+                    .setCheckOptions(checkOptions)
+                    .setTags(tags);
 
             client.registerService(serviceOptions)
                     .onSuccess(it -> System.out.println("Books service registered in consul with ID" + serviceId))

@@ -1,0 +1,5 @@
+GET http://localhost/authors
+Accept: application/json
+Host: authors.localhost
+
+
