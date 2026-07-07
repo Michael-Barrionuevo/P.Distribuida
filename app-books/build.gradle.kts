@@ -49,6 +49,9 @@ dependencies {
     // Fault Tolerance (Resilencia)
     implementation("io.quarkus:quarkus-smallrye-fault-tolerance")
 
+    //Telemetria
+    implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
+
 
 }
 
