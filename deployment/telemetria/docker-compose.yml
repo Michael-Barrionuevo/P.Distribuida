@@ -5,18 +5,16 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Badboy22
-      POSTGRES_DB: books20262026
+      POSTGRES_DB: books-db
     volumes:
       - /Users/veykerbarrionuevo/P.Distribuida/db:/var/lib/postgresql/data
     ports:
       - 54321:5432
-
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d books-db" ]
       interval: 5s
       timeout: 5s
       retries: 5
-
 
   postgresql-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
@@ -24,53 +22,53 @@ services:
     environment:
       DATA_SOURCE_NAME: "postgresql://postgres:Badboy22@db-server:5432/books-db?sslmode=disable"
     ports:
-     - 9187:9187
+      - 9187:9187
     depends_on:
       db-server:
         condition: service_healthy
 
   consul:
     image: consul:1.15.4
-    command: |
-      agent -dev
-      -ui
-      -bind 0.0.0.0
-      -client 0.0.0.0
-    #ports:
-    #  - 8500:8500
+    command: ["agent", "-dev", "-ui", "-bind=0.0.0.0", "-client=0.0.0.0"]
+
   proxy:
     image: traefik:3.7.5
-    command: |
-      --api.insecure=true
-      --api.dashboard=true
-      --entryPoints.http.address=":80"
-      --entryPoints.traefik.address=":8080"
-      --entryPoints.metrics.address=":8082"
-      --providers.consulCatalog
-      --providers.consulCatalog.endpoint.address=consul:8500
-      --providers.consulCatalog.exposedByDefault=false
-      --providers.consulCatalog.refreshInterval=5s
-      
-      --metrics.prometheus=true
-      --metrics.prometheus.entryPoint=metrics
-      #ports:
-      - 8080:80
-      - 8082:8082
+    container_name: proxy-1
+    command:
+      - "--api.insecure=true"
+      - "--api.dashboard=true"
+      - "--entryPoints.http.address=:80"
+      - "--entryPoints.traefik.address=:8080"
+      - "--entryPoints.metrics.address=:8082"
+      - "--providers.consulcatalog=true"
+      - "--providers.consulcatalog.endpoint.address=consul:8500"
+      - "--providers.consulcatalog.exposedByDefault=false"
+      - "--providers.consulcatalog.refreshInterval=5s"
+      - "--metrics.prometheus=true"
+      - "--metrics.prometheus.entryPoint=metrics"
+    ports:
+      - "8089:80"       # Mapeado al 8089 de tu Mac para esquivar tu Nginx local
+      - "8088:8080"     # Dashboard de Traefik en el puerto 8088
+      - "8082:8082"     # Puerto de métricas de Traefik para Prometheus
     depends_on:
       - consul
+
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus-1
     volumes:
       - ./configs:/etc/prometheus
     ports:
-     - 9090:9090
+      - 9090:9090
     expose:
       - 9000
 
   graphana:
     image: grafana/grafana-oss:latest
+    container_name: graphana-1
     ports:
       - 3000:3000
+
   authors:
     build:
       context: ../../app-authors
@@ -85,11 +83,10 @@ services:
       CONSUL_PORT: 8500
     ports:
       - 8070:8080
-    #expose:
-    #  - 8080
     depends_on:
       - db-server
       - consul
+
   books:
     build:
       context: ../../app-books
@@ -102,11 +99,12 @@ services:
       QUARKUS_HTTP_PORT: 8080
       QUARKUS_HOST: consul
       CONSUL_PORT: 8500
-    #ports:
-    #  - 8080:8080
+    ports:
+      - 8081:8080
     depends_on:
       - db-server
       - consul
+
   customers:
     build:
       context: ../../app-customers
@@ -116,9 +114,10 @@ services:
       SERVER_PORT: 8080
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CLOUD_CONSUL_PORT: 8500
+    ports:
+      - 8083:8080
     depends_on:
       - consul
-
 
 volumes:
   postgres-data:

@@ -7,12 +7,12 @@ scrape_configs:
     scrape_interval: 10s
     metrics_path: /q/metrics
     static_configs:
-      - targets: ['authors:8080']
+      - targets: ['authors-app:8080']
   - job_name: books-app
     scrape_interval: 10s
     metrics_path: /q/metrics
     static_configs:
-      - targets: [ 'books:8080' ]
+      - targets: [ 'books-app:8080' ]
   - job_name: proxy
     scrape_interval: 10s
     metrics_path: /metrics
