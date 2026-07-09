@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-books
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-books
+  template:
+    metadata:
+      labels:
+        app: app-books
+    spec:
+      containers:
+        - name: app-books
+          image: michaelbarrionuevo/app-books:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: "jdbc:postgresql://postgres:5432/books-db"
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: "postgres"
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              value: "postgres"
+            - name: QUARKUS_HTTP_PORT
+              value: "8080"
+            - name: CONSUL_HOST
+              value: "consul"
+            - name: CONSUL_PORT
+              value: "8500"
+            - name: QUARKUS_FLYWAY_MIGRATE_AT_START
+              value: "false"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-books
+spec:
+  type: ClusterIP
+  selector:
+    app: app-books
+  ports:
+    - port: 8080
+      targetPort: 8080
