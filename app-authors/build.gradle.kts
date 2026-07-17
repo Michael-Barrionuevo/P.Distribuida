@@ -57,6 +57,9 @@ dependencies {
 
     // Health Checks
     implementation("io.quarkus:quarkus-smallrye-health")
+
+    // Open Telemetry
+    implementation("io.quarkus:quarkus-opentelemetry")
 }
 
 tasks.test {
