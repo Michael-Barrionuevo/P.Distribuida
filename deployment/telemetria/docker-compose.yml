@@ -9,7 +9,7 @@ services:
     volumes:
       - /Users/veykerbarrionuevo/P.Distribuida/db:/var/lib/postgresql/data
     ports:
-      - 54321:5432
+      - 54321:5432 # Mapeado al 54321 de tu Mac
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d books-db" ]
       interval: 5s
@@ -30,6 +30,13 @@ services:
   consul:
     image: consul:1.15.4
     command: ["agent", "-dev", "-ui", "-bind=0.0.0.0", "-client=0.0.0.0"]
+    ports:
+      - 8500:8500 # Agregamos la exposición del puerto para que puedas ver el UI de Consul
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   proxy:
     image: traefik:3.7.5
@@ -51,7 +58,8 @@ services:
       - "8088:8080"     # Dashboard de Traefik en el puerto 8088
       - "8082:8082"     # Puerto de métricas de Traefik para Prometheus
     depends_on:
-      - consul
+      consul:
+        condition: service_healthy
 
   prometheus:
     image: prom/prometheus:latest
@@ -62,6 +70,9 @@ services:
       - 9090:9090
     expose:
       - 9000
+    depends_on:
+      consul:
+        condition: service_healthy
 
   graphana:
     image: grafana/grafana-oss:latest
@@ -78,14 +89,16 @@ services:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db-server:5432/books-db
       QUARKUS_DATASOURCE_USERNAME: postgres
       QUARKUS_DATASOURCE_PASSWORD: Badboy22
-      QUARKUS_HTTP_PORT: 8080
-      QUARKUS_HOST: consul
+      QUARKUS_HTTP_PORT: 8080     # Internamente escucha en el 8080
+      CONSUL_HOST: consul         # Corregido
       CONSUL_PORT: 8500
     ports:
-      - 8070:8080
+      - 8070:8080                 # Mapeado al 8070 de tu Mac
     depends_on:
-      - db-server
-      - consul
+      db-server:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
 
   books:
     build:
@@ -96,14 +109,16 @@ services:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db-server:5432/books-db
       QUARKUS_DATASOURCE_USERNAME: postgres
       QUARKUS_DATASOURCE_PASSWORD: Badboy22
-      QUARKUS_HTTP_PORT: 8080
-      QUARKUS_HOST: consul
+      QUARKUS_HTTP_PORT: 8080     # Internamente escucha en el 8080
+      CONSUL_HOST: consul         # Corregido
       CONSUL_PORT: 8500
     ports:
-      - 8081:8080
+      - 8081:8080                 # Mapeado al 8081 de tu Mac
     depends_on:
-      - db-server
-      - consul
+      db-server:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
 
   customers:
     build:
@@ -111,13 +126,14 @@ services:
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: customers-app
     environment:
-      SERVER_PORT: 8080
+      SERVER_PORT: 8090           # Sincronizado con el 8090 de tu application.yml
       SPRING_CLOUD_CONSUL_HOST: consul
       SPRING_CLOUD_CONSUL_PORT: 8500
     ports:
-      - 8083:8080
+      - 8083:8090                 # Mapea el 8083 de tu Mac al 8090 interno del contenedor
     depends_on:
-      - consul
+      consul:
+        condition: service_healthy
 
 volumes:
   postgres-data:

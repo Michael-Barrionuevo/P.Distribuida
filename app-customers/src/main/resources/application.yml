@@ -8,6 +8,10 @@ spring:
       host: localhost
       port: 8500
       discovery:
+
+        health-check-path: /actuator/health
+        health-check-interval: 10s
+        instance-id: ${spring.application.name}-${random.value}
         tags:
           - framework=springboot-4.0.6
           - traefik.enable=true

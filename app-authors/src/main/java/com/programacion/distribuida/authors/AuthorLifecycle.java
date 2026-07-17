@@ -15,9 +15,9 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.net.InetAddress;
 import java.util.List;
 
-
 @ApplicationScoped
 public class AuthorLifecycle {
+
     @Inject
     @ConfigProperty(name = "consul.host", defaultValue = "127.0.0.1")
     String consultHost;
@@ -40,11 +40,14 @@ public class AuthorLifecycle {
                     .setHost(consultHost)
                     .setPort(consulPort);
             ConsulClient client = ConsulClient.create(vertx, options);
-            String ipAddress = InetAddress.getLocalHost().getHostAddress();
 
-            serviceId = "app-authors-%s:%d".formatted(ipAddress, appPort);
+            // Corrección: Asignamos a la variable de instancia
+            this.ipAddress = InetAddress.getLocalHost().getHostAddress();
+            this.serviceId = "app-authors-%s:%d".formatted(ipAddress, appPort);
 
-            var urlCheck = "http://%s:%d/ping".formatted(ipAddress, appPort);
+            // CAMBIO CLAVE: Consul ahora apunta al readiness de MicroProfile Health
+            var urlCheck = "http://%s:%d/q/health/ready".formatted(ipAddress, appPort);
+
             CheckOptions checkOptions = new CheckOptions()
                     .setHttp(urlCheck)
                     .setInterval("10s")
@@ -55,7 +58,6 @@ public class AuthorLifecycle {
                     "traefik.http.routers.router-app-authors.rule=PathPrefix(`/app-authors`)",
                     "traefik.http.routers.router-app-authors.middlewares=middleware-authors",
                     "traefik.http.middlewares.middleware-authors.stripprefix.prefixes=/app-authors"
-
             );
 
             ServiceOptions serviceOptions = new ServiceOptions()
@@ -66,29 +68,24 @@ public class AuthorLifecycle {
                     .setCheckOptions(checkOptions)
                     .setTags(tags);
 
-
             client.registerService(serviceOptions)
-                    .onSuccess(it -> System.out.println("Authors service registered in consul with ID" + serviceId))
+                    .onSuccess(it -> System.out.println("Authors service registered in consul with ID " + serviceId))
                     .onFailure(it -> {
-                        System.out.println("Failed to register Authors service in consul: ");
+                        System.out.println("Failed to register Authors service in consul: " + it.getMessage());
                     });
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public void destroy(@Observes ShutdownEvent event, Vertx vertx) {
-
         System.out.println("AuthorsLifeCycle destroy");
         ConsulClientOptions options = new ConsulClientOptions()
                 .setHost(consultHost)
                 .setPort(consulPort);
         ConsulClient client = ConsulClient.create(vertx, options);
         client.deregisterService(serviceId)
-                .onSuccess(it -> System.out.println("Authors service deregister from Consul with ID: " + serviceId))
-                .onFailure(it -> System.out.println("Failed to deregister Authors service from Consul" + it.getMessage()));
-
+                .onSuccess(it -> System.out.println("Authors service deregistered from Consul with ID: " + serviceId))
+                .onFailure(it -> System.out.println("Failed to deregister Authors service from Consul: " + it.getMessage()));
     }
-
 }

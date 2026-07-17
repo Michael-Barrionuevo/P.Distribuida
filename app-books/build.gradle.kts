@@ -56,6 +56,9 @@ dependencies {
     implementation("io.quarkus:quarkus-kubernetes")
     implementation("io.quarkus:quarkus-container-image-jib")
 
+    // Health Checks
+    implementation("io.quarkus:quarkus-smallrye-health")
+
 
 }
 
